@@ -1,0 +1,82 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+
+	"github.com/TeneoProtocolAI/teneo-agent-sdk/pkg/agent"
+	"github.com/joho/godotenv"
+)
+
+type AgentGokusan001Agent struct{}
+
+func (a *AgentGokusan001Agent) ProcessTask(ctx context.Context, task string) (string, error) {
+	log.Printf("Processing task: %s", task)
+
+	// Clean up the task input
+	task = strings.TrimSpace(task)
+	task = strings.TrimPrefix(task, "/")
+	taskLower := strings.ToLower(task)
+
+	// Split into command and arguments
+	parts := strings.Fields(taskLower)
+	if len(parts) == 0 {
+		return "No command provided. Available commands: /track, /alert, /summarize, /scan-token, /node-status", nil
+	}
+
+	command := parts[0]
+	args := parts[1:]
+
+	// Route to appropriate command handler
+	switch command {
+	case "/track":
+		// TODO: Implement monitor activity, gas, inflows, outflows
+		return "Command '/track' executed successfully", nil
+
+	case "/alert":
+		// TODO: Implement notify on whale moves, TVL drops, unlocks
+		return "Command '/alert' executed successfully", nil
+
+	case "/summarize":
+		// TODO: Implement explain any transaction in human language
+		return "Command '/summarize' executed successfully", nil
+
+	case "/scan-token":
+		// TODO: Implement check liquidity, holders, contracts, risks
+		return "Command '/scan-token' executed successfully", nil
+
+	case "/node-status":
+		// TODO: Implement check uptime, rewards, network health
+		return "Command '/node-status' executed successfully", nil
+
+	default:
+		return fmt.Sprintf("Unknown command '%s'. Available commands: /track, /alert, /summarize, /scan-token, /node-status", command), nil
+	}
+}
+
+func main() {
+	godotenv.Load()
+	config := agent.DefaultConfig()
+
+	config.Name = "gokusan"
+	config.Description = "Ai helper with authentic criteria, helping answer about DePIN adn web3 purpose"
+	config.Capabilities = []string{"on-chain intelligence & monitoring", "depin node assistant"}
+	config.PrivateKey = os.Getenv("PRIVATE_KEY")
+	config.NFTTokenID = os.Getenv("285")
+	config.OwnerAddress = os.Getenv("0x7ed1468ff6bf4cc6d824bbdceebfc80b366d0e55")
+
+	enhancedAgent, err := agent.NewEnhancedAgent(&agent.EnhancedAgentConfig{
+		Config:       config,
+		AgentHandler: &AgentGokusan001Agent{},
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Starting gokusan...")
+	enhancedAgent.Run()
+}
